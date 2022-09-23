@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <groupId>org.ymq.io</groupId>
-    <artifactId>io</artifactId>
+    <artifasctId>io</artifasctId>
     <version>${parent.version}</version>
 
 </project>
