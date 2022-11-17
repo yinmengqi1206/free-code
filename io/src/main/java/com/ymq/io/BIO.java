@@ -3,14 +3,11 @@ package com.ymq.io;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 
 /**
  * 阻塞id
