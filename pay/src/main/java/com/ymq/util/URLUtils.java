@@ -1,4 +1,4 @@
-package com.ymq.pay.util;
+package com.ymq.util;
 
 import javax.servlet.http.HttpServletRequest;
 

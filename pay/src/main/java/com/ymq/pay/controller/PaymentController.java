@@ -6,7 +6,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import com.ymq.pay.enums.PaypalPaymentIntent;
 import com.ymq.pay.enums.PaypalPaymentMethod;
 import com.ymq.pay.service.PaypalService;
-import com.ymq.pay.util.URLUtils;
+import com.ymq.util.URLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
