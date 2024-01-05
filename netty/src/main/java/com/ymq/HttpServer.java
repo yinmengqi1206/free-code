@@ -3,17 +3,17 @@ package com.ymq;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.FixedLengthFrameDecoder;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
 
 /**
@@ -52,14 +52,7 @@ public class HttpServer {
                             ByteBuf delimiter = Unpooled.copiedBuffer("&".getBytes());
                             socketChannel.pipeline()
                                     //.addLast(new FixedLengthFrameDecoder(10))
-                                    //.addLast(new DelimiterBasedFrameDecoder(10, true, true, delimiter))
-                                    .addLast(new LengthFieldBasedFrameDecoder(
-                                            MAX_FRAME_LENGTH,
-                                            LENGTH_FIELD_OFFSET,
-                                            LENGTH_FIELD_LENGTH,
-                                            LENGTH_ADJUSTMENT,
-                                            INITIAL_BYTES_TO_STRIP))
-                                    .addLast(new EchoServerHandler());
+                                    .addLast(new DelimiterBasedFrameDecoder(10, true, true, delimiter));
                             socketChannel.pipeline()
                                     .addLast("codec", new HttpServerCodec())
                                     // HttpContent 压缩
