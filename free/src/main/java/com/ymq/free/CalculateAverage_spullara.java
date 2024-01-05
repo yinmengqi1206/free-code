@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class CalculateAverage_spullara {
-    private static final String FILE = "./measurements.txt";
+    private static final String FILE = "/Users/yinmengqi/IdeaProjects/free-code/free/src/main/resources/measurements.txt";
 
     /*
      * My results on this computer:
@@ -77,10 +77,10 @@ public class CalculateAverage_spullara {
                                 temp = negative * ((bb.get(currentPosition) - '0') * 100 + ((bb.get(currentPosition + 1) - '0') * 10 + (bb.get(currentPosition + 3) - '0')));
                                 currentPosition += 4;
                             }
-                            if (bb.get(currentPosition) == '\r') {
+                            /*if (bb.get(currentPosition) == '\r') {
                                 currentPosition++;
-                            }
-                            currentPosition++;
+                            }*/
+                            //currentPosition++;
                             resultMap.putOrMerge(buffer, 0, offset, temp / 10.0, hash);
                             bb.position(currentPosition);
                         }
