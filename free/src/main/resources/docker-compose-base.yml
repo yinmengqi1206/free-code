@@ -1,0 +1,95 @@
+version: "3.9"
+services:
+  ymq_nacos:
+    image: nacos/nacos-server:latest
+    container_name: ymq_nacos
+    environment:
+      - PREFER_HOST_MODE=ip
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=ymq_mysql
+      - MYSQL_SERVICE_DB_NAME=nacos
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=123456
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      - NACOS_AUTH_ENABLE=true
+      - NACOS_AUTH_TOKEN=VGhpc0lzTXlDdXN0b21TZWNyZXRLZXkwMTIzNDU2Nzg=
+      - NACOS_AUTH_IDENTITY_KEY=nacos
+      - NACOS_AUTH_IDENTITY_VALUE=nacos
+      - JVM_XMS=512m
+      - JVM_XMX=512m
+      - JVM_XMN=256m
+    volumes:
+      - /opt/env/nacos/logs/:/home/nacos/logs
+      - /opt/env/nacos/init.d/custom.properties:/home/nacos/init.d/custom.properties
+    depends_on:
+      - ymq_mysql
+    ports:
+      - 8848:8848
+      - 9848:9848
+    restart: always
+    networks:
+      - app-tier
+
+  ymq_redis:
+    image: redis:latest
+    container_name: ymq_redis
+    environment:
+      - TZ=Asia/Shanghai
+      - requirepass=123456
+    ports:
+      - 6379:6379
+    command: [ "redis-server","/etc/redis/conf/redis.conf" ]
+    volumes:
+      - /opt/env/redis/conf:/etc/redis/conf
+      - /opt/env/redis/data:/data
+    restart: always
+    networks:
+      - app-tier
+
+  ymq_rabbitmq:
+    image: rabbitmq:management
+    hostname: rabbitmq
+    container_name: ymq_rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    volumes:
+      - /opt/env/rabbitmq/data:/var/lib/rabbitmq/mnesia
+      - /opt/env/rabbitmq/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    restart: always
+    networks:
+      - app-tier
+  ymq_mysql:
+    image: mysql:latest
+    container_name: ymq_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_HOST: '%'
+      TZ: Asia/Shanghai
+    restart: always
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=128M
+      --default-authentication-plugin=caching_sha2_password
+    ports:
+      - 3306:3306
+    volumes:
+      - /opt/env/mysql/data:/var/lib/mysql
+      - /opt/env/mysql/logs:/var/log/mysql
+      - /opt/env/mysql/init:/docker-entrypoint-initdb.d/
+      - /opt/env/mysql/config/my.cnf:/etc/my.cnf
+    networks:
+      - app-tier
+
+networks:
+  app-tier:
+    name: app-tier
+    driver: bridge
