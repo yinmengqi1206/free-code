@@ -1,0 +1,11 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: spring-ai
+  ai:
+    ollama:
+      ## ????????
+      base-url: http://10.0.21.170:11434/
+      chat:
+        model: llama3-ins:latest
