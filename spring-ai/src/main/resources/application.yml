@@ -3,6 +3,9 @@ server:
 spring:
   application:
     name: spring-ai
+  devtools:
+    restart:
+      enabled: true
   ai:
     ollama:
       ## ????????

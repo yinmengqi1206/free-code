@@ -1,6 +1,7 @@
 package com.ymq.free.springai.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -20,6 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 @AllArgsConstructor
+@Slf4j
 public class AiController {
     private final OllamaChatClient chatClient;
 
@@ -29,8 +31,10 @@ public class AiController {
     }
 
     @GetMapping(value = "/ai/generateStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> generateStream(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
+    public Flux<String> generateStream(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
         Prompt prompt = new Prompt(new UserMessage(message));
-        return chatClient.stream(prompt);
+        Flux<ChatResponse> chatResponseFlux = chatClient.stream(prompt);
+        log.info("生成结束:正在返回");
+        return chatResponseFlux.map(chatResponse -> chatResponse.getResult().getOutput().getContent().replace("data:", ""));
     }
 }
