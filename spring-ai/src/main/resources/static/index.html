@@ -5,24 +5,38 @@
     <title>spring Ai</title>
 </head>
 <body>
+<div>
+    <h1>spring Ai 请输入问题</h1>
+    <!--多行文本框-->
+    <textarea id="question" name="question" rows="5" cols="50"></textarea>
+    <br/>
+    <button onclick="send()">发送</button>
+</div>
 <div id="content">
-    spring Ai,讲个笑话<br>
+
 </div>
 </body>
 <script>
-    // 在这里执行你的JavaScript代码
-    let sse = new EventSource(`http://localhost:8081/api/v1/ai/generateStream`);
-    sse.onopen = function (event) {
-        console.log("打开sse连接");
-    }
-    sse.onerror = function (event) {
-        console.log("请求结束");
-        sse.close()
-    }
-    sse.onmessage = function (event) {
-        //逐字吧data追加到id为content的div里
-        document.getElementById("content").innerHTML += event.data;
-        console.log(event.data);
+    function send() {
+        //获取id是question的输入内容
+        let message = document.getElementById("question").value;
+        // 在这里执行你的JavaScript代码
+        let sse = new EventSource(`http://localhost:8081/api/v1/ai/generateStream?message=${message}`);
+        sse.onopen = function (event) {
+            console.log("打开sse连接");
+        }
+        sse.onerror = function (event) {
+            console.log("请求结束");
+            document.getElementById("content").innerHTML += "<br/><hr/><br/>";
+            sse.close()
+        }
+        document.getElementById("content").innerHTML += "问:" + message + "<br/>";
+        document.getElementById("content").innerHTML += "答:";
+        sse.onmessage = function (event) {
+            //逐字吧data追加到id为content的div里
+            document.getElementById("content").innerHTML += event.data;
+            console.log(event.data);
+        }
     }
 </script>
 
