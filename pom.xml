@@ -24,7 +24,7 @@
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
-    <!--<repositories>
+    <repositories>
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
@@ -41,7 +41,7 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-    </repositories>-->
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>

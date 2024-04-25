@@ -12,3 +12,7 @@ spring:
       base-url: http://10.0.21.170:11434/
       chat:
         model: llama3-ins:latest
+        options:
+          # ?????
+          temperature: 0
+          num_ctx: 4096
