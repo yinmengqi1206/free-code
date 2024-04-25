@@ -25,6 +25,8 @@ import java.util.Map;
 public class AiController {
     private final OllamaChatClient chatClient;
 
+    private final OllamaChatClient openAiChatClient;
+
     @GetMapping("/ai/generate")
     public Map generate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
         return Map.of("generation", chatClient.call(message));
@@ -36,5 +38,16 @@ public class AiController {
         Flux<ChatResponse> chatResponseFlux = chatClient.stream(prompt);
         log.info("生成结束:正在返回");
         return chatResponseFlux.map(chatResponse -> chatResponse.getResult().getOutput().getContent().replace("data:", ""));
+    }
+
+    @GetMapping("open/ai/generate")
+    public Map openGenerate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
+        return Map.of("generation", openAiChatClient.call(message));
+    }
+
+    @GetMapping("open/ai/generateStream")
+    public Flux<ChatResponse> openGenerateStream(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
+        Prompt prompt = new Prompt(new UserMessage(message));
+        return openAiChatClient.stream(prompt);
     }
 }

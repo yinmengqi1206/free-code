@@ -8,11 +8,17 @@ spring:
       enabled: true
   ai:
     ollama:
-      ## ????????
+      ## oolama地址
       base-url: http://10.0.21.170:11434/
       chat:
         model: llama3-ins:latest
         options:
-          # ?????
+          # 模型发散度
           temperature: 0
           num_ctx: 4096
+    openai:
+      api-key: xxxx
+      chat:
+        options:
+          model: gpt-3.5-turbo
+          temperature: 0.7
