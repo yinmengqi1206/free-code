@@ -3,6 +3,8 @@ package com.ymq.free.springai.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.ChatResponse;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatClient;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,19 +31,49 @@ public class AiController {
 
     private final OllamaChatClient openAiChatClient;
 
+    // 历史消息列表
+    static List<Message> historyMessage = new ArrayList<>();
+    // 历史消息列表的最大长度
+    static int maxLen = 1000;
+
     @GetMapping("/ai/generate")
-    public Map generate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
-        return Map.of("generation", chatClient.call(message));
+    public String generate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
+        // 用户输入的文本是UserMessage
+        historyMessage.add(new UserMessage(message));
+        // 发给AI前对历史消息对列的长度进行检查
+        if (historyMessage.size() > maxLen) {
+            historyMessage = historyMessage.subList(historyMessage.size() - maxLen - 1, historyMessage.size());
+        }
+        // 获取AssistantMessage
+        ChatResponse chatResponse = chatClient.call(new Prompt(historyMessage));
+        AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
+        // 将AI回复的消息放到历史消息列表中
+        historyMessage.add(assistantMessage);
+        return assistantMessage.getContent();
     }
 
     @GetMapping(value = "/ai/generateStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> generateStream(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
-        Prompt prompt = new Prompt(new UserMessage(message));
+        // 用户输入的文本是UserMessage
+        historyMessage.add(new UserMessage(message));
+        // 发给AI前对历史消息对列的长度进行检查
+        if (historyMessage.size() > maxLen) {
+            historyMessage = historyMessage.subList(historyMessage.size() - maxLen - 1, historyMessage.size());
+        }
+        Prompt prompt = new Prompt(historyMessage);
+        log.info("当前上下问historyMessage:{}", historyMessage);
         Flux<ChatResponse> chatResponseFlux = chatClient.stream(prompt);
         log.info("生成结束:正在返回");
-        return chatResponseFlux.map(chatResponse -> chatResponse.getResult().getOutput().getContent().replace("data:", ""));
+        return chatResponseFlux.map(chatResponse -> {
+            AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
+            // 将AI回复的消息放到历史消息列表中
+            historyMessage.add(assistantMessage);
+            //返回具体回答
+            return assistantMessage.getContent().replace("data:", "");
+        });
     }
 
+    /***********************************************openAi*********************************************************/
     @GetMapping("open/ai/generate")
     public Map openGenerate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
         return Map.of("generation", openAiChatClient.call(message));
