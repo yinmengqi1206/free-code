@@ -76,7 +76,7 @@ public class AiController {
 
     @GetMapping("hf/ai/generate")
     public String huggingGenerate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
-        HuggingfaceChatClient client = new HuggingfaceChatClient("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", "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment-latest");
+        HuggingfaceChatClient client = new HuggingfaceChatClient("xxxxx", "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment-latest");
         Prompt prompt = new Prompt(message);
         ChatResponse response = client.call(prompt);
         return response.getResult().getOutput().getContent();
