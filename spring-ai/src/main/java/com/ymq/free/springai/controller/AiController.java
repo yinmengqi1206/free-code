@@ -7,6 +7,7 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.huggingface.HuggingfaceChatClient;
 import org.springframework.ai.ollama.OllamaChatClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,13 +74,21 @@ public class AiController {
         });
     }
 
+    @GetMapping("hf/ai/generate")
+    public String huggingGenerate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
+        HuggingfaceChatClient client = new HuggingfaceChatClient("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", "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment-latest");
+        Prompt prompt = new Prompt(message);
+        ChatResponse response = client.call(prompt);
+        return response.getResult().getOutput().getContent();
+    }
+
     /***********************************************openAi*********************************************************/
-    @GetMapping("open/ai/generate")
+    @GetMapping("/open/ai/generate")
     public Map openGenerate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
         return Map.of("generation", openAiChatClient.call(message));
     }
 
-    @GetMapping("open/ai/generateStream")
+    @GetMapping("/open/ai/generateStream")
     public Flux<ChatResponse> openGenerateStream(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
         Prompt prompt = new Prompt(new UserMessage(message));
         return openAiChatClient.stream(prompt);
