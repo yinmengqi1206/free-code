@@ -88,6 +88,24 @@ services:
       - /opt/env/mysql/config/my.cnf:/etc/my.cnf
     networks:
       - app-tier
+  ymq_mongo:
+    image: mongo
+    container_name: ymq_mongo
+    ports:
+      - '27017:27017'
+    command: [ --auth ]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: cnode
+      MONGO_USERNAME: cnode
+      MONGO_PASSWORD: cnode
+    volumes:
+      - /opt/env/mongodb/data:/data/db
+      - /opt/env/mongodb/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    networks:
+      - app-tier
+
 
 networks:
   app-tier:

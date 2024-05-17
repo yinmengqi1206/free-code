@@ -7,6 +7,7 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.huggingface.HuggingfaceChatClient;
 import org.springframework.ai.ollama.OllamaChatClient;
 import org.springframework.http.MediaType;
@@ -39,6 +40,7 @@ public class AiController {
 
     @GetMapping("/ai/generate")
     public String generate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
+        log.info("message:{},thread:{}", message, Thread.currentThread());
         // 用户输入的文本是UserMessage
         historyMessage.add(new UserMessage(message));
         // 发给AI前对历史消息对列的长度进行检查
@@ -76,7 +78,7 @@ public class AiController {
 
     @GetMapping("hf/ai/generate")
     public String huggingGenerate(@RequestParam(value = "message", defaultValue = "给我讲个笑话") String message) {
-        HuggingfaceChatClient client = new HuggingfaceChatClient("xxxxx", "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment-latest");
+        HuggingfaceChatClient client = new HuggingfaceChatClient("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", "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment-latest");
         Prompt prompt = new Prompt(message);
         ChatResponse response = client.call(prompt);
         return response.getResult().getOutput().getContent();
