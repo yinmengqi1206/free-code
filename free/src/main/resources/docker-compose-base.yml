@@ -102,6 +102,7 @@ services:
     volumes:
       - /opt/env/mongodb/data:/data/db
       - /opt/env/mongodb/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    restart: always
     networks:
       - app-tier
 
