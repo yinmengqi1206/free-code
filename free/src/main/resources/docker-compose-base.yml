@@ -37,12 +37,12 @@ services:
     container_name: ymq_redis
     environment:
       - TZ=Asia/Shanghai
-      - requirepass=123456
     ports:
       - 6379:6379
-    command: [ "redis-server","/etc/redis/conf/redis.conf" ]
+    # 正确挂载 + 正确启动命令
+    command: redis-server /etc/redis/conf/redis.conf
     volumes:
-      - /opt/env/redis/conf:/etc/redis/conf
+      - /opt/env/redis/conf/redis.conf:/etc/redis/conf/redis.conf
       - /opt/env/redis/data:/data
     restart: always
     networks:
@@ -72,22 +72,23 @@ services:
       MYSQL_ROOT_HOST: '%'
       TZ: Asia/Shanghai
     restart: always
+    # 删掉了报错的不兼容参数
     command:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
       --explicit_defaults_for_timestamp=true
       --lower_case_table_names=1
       --max_allowed_packet=128M
-      --default-authentication-plugin=caching_sha2_password
     ports:
       - 3306:3306
     volumes:
       - /opt/env/mysql/data:/var/lib/mysql
       - /opt/env/mysql/logs:/var/log/mysql
       - /opt/env/mysql/init:/docker-entrypoint-initdb.d/
-      - /opt/env/mysql/config/my.cnf:/etc/my.cnf
+      - /opt/env/mysql/config/my.cnf:/etc/mysql/my.cnf
     networks:
       - app-tier
+
   ymq_mongo:
     image: mongo
     container_name: ymq_mongo
@@ -105,7 +106,6 @@ services:
     restart: always
     networks:
       - app-tier
-
 
 networks:
   app-tier:
