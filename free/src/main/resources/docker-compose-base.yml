@@ -29,7 +29,7 @@ services:
       - 18080:8080   # 控制台（必须）
       - 8848:8848
       - 9848:9848
-    restart: always
+    restart: no
     networks:
       - app-tier
 
@@ -45,7 +45,7 @@ services:
     volumes:
       - /opt/env/redis/conf/redis.conf:/etc/redis/conf/redis.conf
       - /opt/env/redis/data:/data
-    restart: always
+    restart: no
     networks:
       - app-tier
 
@@ -62,7 +62,7 @@ services:
     volumes:
       - /opt/env/rabbitmq/data:/var/lib/rabbitmq/mnesia
       - /opt/env/rabbitmq/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-    restart: always
+    restart: no
     networks:
       - app-tier
   ymq_mysql:
@@ -72,7 +72,7 @@ services:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_ROOT_HOST: '%'
       TZ: Asia/Shanghai
-    restart: always
+    restart: no
     # 删掉了报错的不兼容参数
     command:
       --character-set-server=utf8mb4
@@ -104,7 +104,7 @@ services:
     volumes:
       - /opt/env/mongodb/data:/data/db
       - /opt/env/mongodb/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
-    restart: always
+    restart: no
     networks:
       - app-tier
 
